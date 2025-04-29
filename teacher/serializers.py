@@ -28,3 +28,9 @@ class TeacherLoginSerializer(serializers.Serializer):
         if user and user.is_active:
             return user
         raise serializers.ValidationError('Incorrect Credentials')
+
+
+class TeacherProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields = ["id","username","name","subjects"]

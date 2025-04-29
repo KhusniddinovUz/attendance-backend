@@ -1,13 +1,12 @@
-from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework import generics, permissions
 from rest_framework.response import Response
-from .serializers import TeacherRegisterSerializer,TeacherLoginSerializer
+from .serializers import TeacherRegisterSerializer,TeacherLoginSerializer, TeacherProfileSerializer
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.models import AuthToken
 
 class RegisterTeacherView(generics.CreateAPIView):
     serializer_class = TeacherRegisterSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -41,3 +40,11 @@ class LoginTeacherView(generics.GenericAPIView):
             },
             "token": AuthToken.objects.create(user)[1]
         })
+
+
+class TeacherProfileView(generics.RetrieveAPIView):
+    serializer_class = TeacherProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
