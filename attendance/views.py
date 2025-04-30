@@ -14,6 +14,7 @@ class AttendanceListView(generics.ListAPIView):
         lesson_name = self.request.query_params.get('lesson_name')
         group_name = self.request.query_params.get('group_name')
         date = self.request.query_params.get('date')
+        para = self.request.query_params.get('para')
 
         if lesson_name:
             queryset = queryset.filter(lesson_name__name=lesson_name)
@@ -23,6 +24,9 @@ class AttendanceListView(generics.ListAPIView):
 
         if date:
             queryset = queryset.filter(date=date)
+
+        if para:
+            queryset = queryset.filter(lesson_name__para=para)
 
         return queryset
 
