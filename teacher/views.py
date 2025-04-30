@@ -1,5 +1,6 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
+from rest_framework.exceptions import AuthenticationFailed
 from .serializers import TeacherRegisterSerializer,TeacherLoginSerializer, TeacherProfileSerializer
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.models import AuthToken
@@ -40,6 +41,12 @@ class LoginTeacherView(generics.GenericAPIView):
             },
             "token": AuthToken.objects.create(user)[1]
         })
+
+    def handle_exception(self, exc):
+        if isinstance(exc, AuthenticationFailed):
+            return Response("Login yoki parol noto'gri")
+        return super().handle_exception(exc)
+
 
 
 class TeacherProfileView(generics.RetrieveAPIView):
