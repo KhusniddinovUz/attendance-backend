@@ -39,13 +39,15 @@ class UpdateAttendanceStatusByStudentLesson(generics.UpdateAPIView):
     def get_object(self):
         student_name = self.request.data.get('student_name')
         lesson_name = self.request.data.get('lesson_name')
+        para = self.request.data.get('para')
 
         if not all([student_name, lesson_name]):
-            raise ValueError("Student name and lesson name must be provided.")
+            raise ValueError("Student name, lesson and para must be provided.")
 
         try:
             attendance = Attendance.objects.get(student_name__name=student_name,
-                                                lesson_name__name=lesson_name)
+                                                lesson_name__name=lesson_name,
+                                                lesson_name__para=para,)
             return attendance
         except Attendance.DoesNotExist:
             raise ValueError("Attendance record not found.")
