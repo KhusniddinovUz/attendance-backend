@@ -11,13 +11,9 @@ class AttendanceListView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        lesson_name = self.request.query_params.get('lesson_name')
         group_name = self.request.query_params.get('group_name')
         date = self.request.query_params.get('date')
         para = self.request.query_params.get('para')
-
-        if lesson_name:
-            queryset = queryset.filter(lesson_name__name=lesson_name)
 
         if group_name:
             queryset = queryset.filter(student_name__group_name=group_name)
@@ -38,18 +34,16 @@ class UpdateAttendanceStatusByStudentLesson(generics.UpdateAPIView):
 
     def get_object(self):
         student_name = self.request.data.get('student_name')
-        lesson_name = self.request.data.get('lesson_name')
         para = self.request.data.get('para')
         date = self.request.data.get('date')
 
-        if not all([student_name, lesson_name]):
-            raise ValueError("Student name, lesson and para must be provided.")
+        if not all([student_name, para, date]):
+            raise ValueError("Student name, para and date must be provided.")
 
         try:
             attendance = Attendance.objects.get(student_name__name=student_name,
-                                                lesson_name__name=lesson_name,
                                                 lesson_name__para=para,
-                                                date=date,)
+                                                date=date, )
             return attendance
         except Attendance.DoesNotExist:
             raise ValueError("Attendance record not found.")
@@ -62,12 +56,10 @@ class UpdateAttendanceStatusByStudentLesson(generics.UpdateAPIView):
 
         # ✅ Return all Attendance records instead of just the updated one
         group_name = self.request.data.get('group_name')
-        lesson_name = self.request.data.get('lesson_name')
         para = self.request.data.get('para')
         date = self.request.data.get('date')
         all_records = Attendance.objects.all()
-        all_records = all_records.filter(lesson_name__name=lesson_name,
-                                         student_name__group_name=group_name, date=date,
+        all_records = all_records.filter(student_name__group_name=group_name, date=date,
                                          lesson_name__para=para)
         return Response(AttendanceSerializer(all_records, many=True).data,
                         status=status.HTTP_200_OK)

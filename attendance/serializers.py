@@ -12,7 +12,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
         return obj.student_name.name
 
     def get_lesson_name(self, obj):
-        return obj.lesson_name.name
+        return obj.lesson_name.para
 
 
 class AttendanceStatusUpdateSerializer(serializers.ModelSerializer):

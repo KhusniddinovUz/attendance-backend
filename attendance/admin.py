@@ -19,5 +19,4 @@ class AttendanceAdmin(admin.ModelAdmin):
     list_select_related = ("student_name", "lesson_name")
     search_fields = (
         "student_name__name",
-        "lesson_name__name",
     )
