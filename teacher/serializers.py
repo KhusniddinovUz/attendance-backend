@@ -33,4 +33,4 @@ class TeacherLoginSerializer(serializers.Serializer):
 class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
-        fields = ["id","username","name","subjects"]
+        fields = ["id","username","name"]
