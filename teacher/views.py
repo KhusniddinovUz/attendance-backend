@@ -6,6 +6,7 @@ from .serializers import TeacherRegisterSerializer, TeacherLoginSerializer, \
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.models import AuthToken
 
+
 class RegisterTeacherView(generics.CreateAPIView):
     serializer_class = TeacherRegisterSerializer
     permission_classes = [permissions.AllowAny]
@@ -25,12 +26,11 @@ class RegisterTeacherView(generics.CreateAPIView):
         })
 
 
-
 class LoginTeacherView(generics.GenericAPIView):
     serializer_class = TeacherLoginSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = AuthTokenSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
 
@@ -47,7 +47,6 @@ class LoginTeacherView(generics.GenericAPIView):
         if isinstance(exc, AuthenticationFailed):
             return Response("Login yoki parol noto'gri")
         return super().handle_exception(exc)
-
 
 
 class TeacherProfileView(generics.RetrieveAPIView):
@@ -69,7 +68,11 @@ class AdminLoginView(generics.GenericAPIView):
         # At this point we know it’s a staff user
         user = serializer.validated_data['user']
 
-        return Response(
-            {"token": AuthToken.objects.create(user)[1]},
-            status=status.HTTP_200_OK
-        )
+        return Response({
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "name": user.name,
+                "is_staff": user.is_staff,
+            },
+            "token": AuthToken.objects.create(user)[1]})

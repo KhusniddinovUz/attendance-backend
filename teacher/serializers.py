@@ -21,19 +21,28 @@ class TeacherRegisterSerializer(serializers.ModelSerializer):
 
 class TeacherLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
-    password = serializers.CharField()
+    password = serializers.CharField(write_only=True,)
 
-    def validate(self, data):
-        user = authenticate(**data)
-        if user and user.is_active:
-            return user
-        raise serializers.ValidationError('Login parolda xatolik')
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+        request  = self.context.get('request')
+
+        user = authenticate(request=request, username=username, password=password)
+        if not user or not user.is_active:
+            raise serializers.ValidationError('Login parolda xatolik')
+        #Block admin login
+        if user.is_staff or user.is_superuser:
+            raise serializers.ValidationError("Kirish faqat ustozlar uchun")
+
+        attrs['user'] = user
+        return attrs
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
-        fields = ["id","username","name"]
+        fields = ["id","username","name", "is_staff"]
 
 
 class AdminLoginSerializer(serializers.Serializer):
