@@ -27,10 +27,27 @@ class TeacherLoginSerializer(serializers.Serializer):
         user = authenticate(**data)
         if user and user.is_active:
             return user
-        raise serializers.ValidationError('Incorrect Credentials')
+        raise serializers.ValidationError('Login parolda xatolik')
 
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ["id","username","name"]
+
+
+class AdminLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        user = authenticate(
+            username=attrs['username'],
+            password=attrs['password']
+        )
+        if not user:
+            raise serializers.ValidationError("Login parolda xatolik")
+        if not user.is_staff:
+            raise serializers.ValidationError("Kirish faqat adminlar uchun")
+        attrs['user'] = user
+        return attrs

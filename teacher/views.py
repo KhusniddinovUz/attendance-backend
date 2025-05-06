@@ -1,7 +1,8 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-from .serializers import TeacherRegisterSerializer,TeacherLoginSerializer, TeacherProfileSerializer
+from .serializers import TeacherRegisterSerializer, TeacherLoginSerializer, \
+    TeacherProfileSerializer, AdminLoginSerializer
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from knox.models import AuthToken
 
@@ -55,3 +56,20 @@ class TeacherProfileView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class AdminLoginView(generics.GenericAPIView):
+    serializer_class = AdminLoginSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # At this point we know it’s a staff user
+        user = serializer.validated_data['user']
+
+        return Response(
+            {"token": AuthToken.objects.create(user)[1]},
+            status=status.HTTP_200_OK
+        )

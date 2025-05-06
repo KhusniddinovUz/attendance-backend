@@ -63,3 +63,28 @@ class UpdateAttendanceStatusByStudentLesson(generics.UpdateAPIView):
                                          lesson_name__para=para)
         return Response(AttendanceSerializer(all_records, many=True).data,
                         status=status.HTTP_200_OK)
+
+
+
+class AttendanceListDashboardView(generics.ListAPIView):
+    serializer_class = AttendanceSerializer
+    queryset = Attendance.objects.all()
+    permission_classes = []
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        group_name = self.request.query_params.get('group_name')
+        start_date = self.request.query_params.get('start_date')
+        end_date   = self.request.query_params.get('end_date')
+
+        if group_name:
+            qs = qs.filter(student_name__group_name=group_name)
+
+        # if both bounds are present, use __range; otherwise fall back
+        if start_date and end_date and end_date != "1970-01-01":
+            qs = qs.filter(date__range=[start_date, end_date])
+        elif start_date:
+            qs = qs.filter(date__gte=start_date)
+
+
+        return qs
