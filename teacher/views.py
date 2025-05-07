@@ -21,6 +21,7 @@ class RegisterTeacherView(generics.CreateAPIView):
                 "id": user.id,
                 "username": user.username,
                 "name": user.name,
+                "is_staff": user.is_staff,
             },
             "token": AuthToken.objects.create(user)[1]
         })
@@ -39,6 +40,7 @@ class LoginTeacherView(generics.GenericAPIView):
                 "id": user.id,
                 "username": user.username,
                 "name": user.name,
+                "is_staff": user.is_staff,
             },
             "token": AuthToken.objects.create(user)[1]
         })

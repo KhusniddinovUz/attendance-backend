@@ -13,7 +13,15 @@ SECRET_KEY = 'django-insecure-vdje*vmm!*yfw#l5yax5hwcjin@a_qj)x10@p97r@=d)h0!^_b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["0.0.0.0", "portal.mahoratmarkaz.uz", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "portal.mahoratmarkaz.uz",
+    "127.0.0.1",
+    "localhost",
+
+    #dev home network for testing
+    "192.168.1.5",
+]
 
 AUTH_USER_MODEL = "teacher.Teacher"
 
