@@ -16,7 +16,7 @@ def create_attendance_rows(sender, instance, created, **kwargs):
         Attendance(
             student_name=s,
             lesson_name=instance,
-            status='-',
+            status='+',
             date=instance.date,
         )
         for s in students
