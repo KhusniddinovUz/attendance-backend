@@ -3,20 +3,24 @@ version: '3.8'
 services:
   # PostgreSQL Database Service
   db:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: attendance_db     # Database name
-      POSTGRES_USER: django_user      # Database user
-      POSTGRES_PASSWORD: secretpass   # Strong password (change this!)
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/  # Persists data
-    ports:
-      - "5432:5432"  # Exposes PostgreSQL port (optional)
+    image: postgres:12
+    restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U django_user -d attendance_db"]
-      interval: 5s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
       retries: 5
+      start_period: 30s
+      timeout: 10s
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
+
 
   # Django Application Service
   web:
@@ -24,18 +28,20 @@ services:
     command: >
       sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/app
     ports:
       - "8000:8000"
-    environment:
-      - PYTHONDONTWRITEBYTECODE=1
-      - PYTHONUNBUFFERED=1
-      # PostgreSQL connection (comment out to use SQLite)
-      - DATABASE_URL=postgres://django_user:secretpass@db:5432/attendance_db
     depends_on:
       db:
         condition: service_healthy
+        restart: true
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_SERVER=db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
 
 volumes:
-  postgres_data:  # Named volume for PostgreSQL persistence
+  app-db-data:
