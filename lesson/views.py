@@ -21,5 +21,6 @@ class CreateLessonView(generics.CreateAPIView):
         date = serializer.data['date']
         attendance_queryset = Attendance.objects.all()
         attendance_list = attendance_queryset.filter(student_name__group_name=group, lesson_name__para=para, date=date)
+        attendance_list = attendance_list.select_related('student_name').order_by('student_name__name')
         custom_data = AttendanceSerializer(attendance_list, many=True).data
         return Response(custom_data)

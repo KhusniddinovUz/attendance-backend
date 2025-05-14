@@ -24,6 +24,8 @@ class AttendanceListView(generics.ListAPIView):
         if para:
             queryset = queryset.filter(lesson_name__para=para)
 
+
+        queryset = queryset.select_related('student_name').order_by('student_name__name')
         return queryset
 
 
@@ -61,6 +63,7 @@ class UpdateAttendanceStatusByStudentLesson(generics.UpdateAPIView):
         all_records = Attendance.objects.all()
         all_records = all_records.filter(student_name__group_name=group_name, date=date,
                                          lesson_name__para=para)
+        all_records = all_records.select_related('student_name').order_by('student_name__name')
         return Response(AttendanceSerializer(all_records, many=True).data,
                         status=status.HTTP_200_OK)
 
@@ -86,5 +89,5 @@ class AttendanceListDashboardView(generics.ListAPIView):
         elif start_date:
             qs = qs.filter(date__gte=start_date)
 
-
+        qs = qs.select_related('student_name').order_by('student_name__name')
         return qs
