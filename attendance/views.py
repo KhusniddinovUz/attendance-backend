@@ -79,6 +79,7 @@ class AttendanceListDashboardView(generics.ListAPIView):
         group_name = self.request.query_params.get('group_name')
         start_date = self.request.query_params.get('start_date')
         end_date   = self.request.query_params.get('end_date')
+        lessons = self.request.query_params.get('lessons')
 
         if group_name:
             qs = qs.filter(student_name__group_name=group_name)
@@ -88,6 +89,12 @@ class AttendanceListDashboardView(generics.ListAPIView):
             qs = qs.filter(date__range=[start_date, end_date])
         elif start_date:
             qs = qs.filter(date__gte=start_date)
+
+        if lessons:
+            if lessons == "late":
+                qs = qs.filter(lesson_name__is_late=True)
+            elif lessons == "not-late":
+                qs = qs.filter(lesson_name__is_late=False)
 
         qs = qs.select_related('student_name').order_by('student_name__name')
         return qs

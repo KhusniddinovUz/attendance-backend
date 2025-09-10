@@ -4,7 +4,9 @@ from rest_framework import generics, permissions
 from .serializers import LessonSerializer
 from attendance.models import Attendance
 from attendance.serializers import AttendanceSerializer
-
+from datetime import time
+from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 class CreateLessonView(generics.CreateAPIView):
     queryset = Lesson.objects.all()
@@ -15,6 +17,19 @@ class CreateLessonView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        tz = ZoneInfo('Asia/Tashkent')
+        now_uz = timezone.now().astimezone(tz).time() # Current time in Tashkent
+        is_teacher_late = False
+        para = request.data.get('para')
+        if para == "1":
+            is_teacher_late = now_uz >= time(9, 15) or now_uz <= time(9, 0)
+        elif para == "2":
+            is_teacher_late = now_uz >= time(10, 35) or now_uz <= time(10, 30)
+        elif para == "3":
+            is_teacher_late = now_uz >= time(13, 5) or now_uz <= time(13, 0)
+        serializer.save(is_late=is_teacher_late)
+
+
 
         group = serializer.data['group_name']
         para = serializer.data['para']
