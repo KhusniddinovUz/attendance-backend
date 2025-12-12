@@ -24,9 +24,11 @@ class CreateLessonView(generics.CreateAPIView):
         if para == "1":
             is_teacher_late = now_uz >= time(9, 15) or now_uz <= time(9, 0)
         elif para == "2":
-            is_teacher_late = now_uz >= time(10, 35) or now_uz <= time(10, 30)
+            is_teacher_late = now_uz >= time(10, 25) or now_uz <= time(10, 20)
         elif para == "3":
-            is_teacher_late = now_uz >= time(13, 5) or now_uz <= time(13, 0)
+            is_teacher_late = now_uz >= time(12, 15) or now_uz <= time(12, 10)
+        elif para == "4":
+            is_teacher_late = now_uz >= time(13, 35) or now_uz <= time(13, 30)
         serializer.save(is_late=is_teacher_late)
 
 
