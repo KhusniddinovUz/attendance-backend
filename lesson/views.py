@@ -21,14 +21,14 @@ class CreateLessonView(generics.CreateAPIView):
         now_uz = timezone.now().astimezone(tz).time() # Current time in Tashkent
         is_teacher_late = False
         para = request.data.get('para')
-        if para == "1":
-            is_teacher_late = now_uz >= time(9, 15) or now_uz <= time(9, 0)
-        elif para == "2":
-            is_teacher_late = now_uz >= time(10, 25) or now_uz <= time(10, 20)
-        elif para == "3":
-            is_teacher_late = now_uz >= time(12, 15) or now_uz <= time(12, 10)
-        elif para == "4":
-            is_teacher_late = now_uz >= time(13, 35) or now_uz <= time(13, 30)
+        # if para == "1":
+        #     is_teacher_late = now_uz >= time(9, 15) or now_uz <= time(9, 0)
+        # elif para == "2":
+        #     is_teacher_late = now_uz >= time(10, 25) or now_uz <= time(10, 20)
+        # elif para == "3":
+        #     is_teacher_late = now_uz >= time(12, 15) or now_uz <= time(12, 10)
+        # elif para == "4":
+        #     is_teacher_late = now_uz >= time(13, 35) or now_uz <= time(13, 30)
         serializer.save(is_late=is_teacher_late)
 
 
