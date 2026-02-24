@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "lesson.apps.LessonConfig",
     "attendance",
     "teacher",
+    "finalmark",
 ]
 
 MIDDLEWARE = [
